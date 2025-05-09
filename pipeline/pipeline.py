@@ -76,7 +76,7 @@ def prepare(df, path):
         path (str): The path where the cleaned dataset will be saved.
     """
     
-    cleaned_set = cleaning_pipe.transform(df)
+    cleaned_set = cleaning_pipe.fit_transform(df)
 
     cleaned_set.to_csv(path, index=False)
     print(f"Dataset saved to {path} with {cleaned_set.shape[0]} rows and {cleaned_set.shape[1]} columns")
@@ -92,6 +92,6 @@ def prepare_dict(input_dict):
     """
     
     df = pd.DataFrame([input_dict])
-    cleaned_set = cleaning_pipe.transform(df)
+    cleaned_set = cleaning_pipe.fit_transform(df)
     
     return cleaned_set
