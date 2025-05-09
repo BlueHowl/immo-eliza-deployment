@@ -33,6 +33,29 @@ FEATURES = [
     "buildingConstructionYear",
 ]
 
+XGB_FEATURES = [
+    "habitableSurface",
+    "toiletCount",
+    "postCode",
+    "bedroomCount",
+    "subtype",
+    "kitchenType",
+    "buildingCondition",
+    "landSurface",
+    "hasOffice",
+    "hasSwimmingPool",
+    "epc_kwh",
+    "facedeCount",
+    "parkingCountOutdoor",
+    "hasFireplace",
+    "terraceSurface",
+    "hasPhotovoltaicPanels",
+    "hasDressingRoom",
+    "hasHeatPump",
+    "hasThermicPanels",
+    "buildingConstructionYear"
+]
+
 # Default values for all pipeline fields
 def create_default_dict():
     return {
@@ -97,21 +120,12 @@ def predict(input_dict):
     
     # Process through pipeline
     df = prepare_dict(full_dict)
-    
-    # Ensure the DataFrame has exactly the columns needed by the model in the exact order
-    # This is crucial to avoid feature_names mismatch error
-    expected_features = ["habitableSurface","toiletCount","postCode","bedroomCount","subtype","kitchenType","buildingCondition","landSurface","hasOffice","hasSwimmingPool","epc_kwh","facedeCount","parkingCountOutdoor","hasFireplace","terraceSurface","hasPhotovoltaicPanels","hasDressingRoom","hasHeatPump","hasThermicPanels","buildingConstructionYear"]
-    
-    # Ensure all expected features exist in the DataFrame
-    for feature in expected_features:
-        if feature not in df.columns:
-            df[feature] = 0  # Add missing features with a default value
-    
+ 
     # Reorder columns to match exactly what the model expects
-    df = df[expected_features]
+    df = df[XGB_FEATURES]
     
     # Create DMatrix for XGBoost prediction with feature_names explicitly specified
-    dmatrix = xgb.DMatrix(df, feature_names=expected_features)
+    dmatrix = xgb.DMatrix(df, feature_names=XGB_FEATURES)
     prediction = model.predict(dmatrix)
     return float(prediction[0])
 
@@ -193,7 +207,7 @@ def gradio_wrapper(*args):
     input_values = [
         args[4],              # habitableSurface
         args[16],             # toiletCount
-        args[2],
+        args[2],              # province
         postcode_val,         # postCode
         args[1],              # bedroomCount
         subtype_val,          # subtype
@@ -208,7 +222,7 @@ def gradio_wrapper(*args):
         args[14],             # parkingCountOutdoor
         args[18],             # hasFireplace
         args[5],              # hasDressingRoom
-        args[10],              # hasPhotovoltaicPanels
+        args[10],             # hasPhotovoltaicPanels
         args[9],              # hasHeatPump
         args[11],             # hasThermicPanels
         args[7],              # buildingConstructionYear
@@ -216,7 +230,7 @@ def gradio_wrapper(*args):
     
     # Create dictionary with feature names as keys
     input_dict = dict(zip(FEATURES, input_values))
-    print(input_dict)
+
     return predict(input_dict)
 
 # Create the interface

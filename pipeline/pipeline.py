@@ -50,8 +50,6 @@ MODE_REPLACE_LIST = ['buildingCondition', 'subtype', 'kitchenType']
 
 
 cleaning_pipe = Pipeline(steps=[
-    # ('drop_duplicates', DuplicateDropper(subset=['id'])),
-
     ('drop_columns', ColumnDropper(columns_to_drop=TO_DROP_LIST)), #Drop useless columns
 
     ('replace_na_bools', NAReplacer(column=NA_BOOL_REPLACE_LIST, new_value=False)), #Assume NaN is not having the feature
@@ -60,8 +58,6 @@ cleaning_pipe = Pipeline(steps=[
     #calculate epc_kwh
     ('epc_kwh_calculator', EpcKwhCalculator()), #Calculate epc_kwh from epcScore & province
     ('drop_epc_province_columns', ColumnDropper(columns_to_drop=['epcScore', 'province'])), #Drop columns used to calculate epc_kwh
-
-    # ('drop_na', NADropper()), #Drop rows with NaN
 
     ('convert_bool_to_int', BooleanTransformer()), #Convert boolean strings to integers (True=1, False=0)
     ('convert_to_int', ToIntTransformer()) #Convert columns to int
